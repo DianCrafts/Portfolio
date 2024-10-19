@@ -1,72 +1,95 @@
-<template>
-<div class="main-background" :style="{ backgroundColor: topBackgroundcolor }">
-  <div class="intro" :class="{ 'fade-in': index === 0, 'fade-out': index !== 0 }" :style="{color : topTextColor}" >
-    <div  class="welcome">Welcome to My Portfolio!</div>
-    <div class="info">
-      <p>
-        I'm <strong>Dian</strong>, and this is a journey about me—a creative thinker, passionate about <em>[your field]</em>.
-        <br /><br />
-        Discover my projects, experiences, and the ideas that inspire me.
-        <br />
-        Let’s explore innovation and creativity together! 🌟
-      </p>
-    </div>
-  </div>
-</div>
+<template> 
+  <div class="white-main-contatiner" :style="{height : computedHeight}" @scroll ="handleScroll">
+    <div class= "fixed-screen">
+       <div class="content-wrapper">
+        
+         <transition>
+               <div class="intro" v-if="showIntro" > 
+                        <div  class="welcome" >{{ welcomeShownText }}</div>
+                        <div class="info" v-show="isVisible" >
+                          <p>I'm <strong>Dian</strong>, and this is a journey about me—a creative thinker, passionate about <em>[your field]</em>.
+                          <br /><br />
+                          Discover my projects, experiences, and the ideas that inspire me.
+                          <br />
+                          Let’s explore innovation and creativity together! 🌟</p>     
+                        </div>
+                        <div class="buttons-wrapper">
+                            <button class="flat-button" @click="startJourney">START THE JOURNEY</button>
+                            <button class="flat-button" @click="toggleContent">MY CV</button>
+                        </div>
+              </div> 
+          </transition>
+          <transition>
+              <div class="scrolling-data" v-if="showContent" > 
+                    <div class="title">{{ currentTitle }}</div>
+                    <div class="detail">
+                      <p>{{ currentDesc }}</p>
+                    </div>
+              </div> 
+          </transition>
+           <div class ="image-container">
+           
+                <img class="img" :src="road" />
+                    <img 
+                    v-for="(item, i) in icons"
+                    :key="i"
+                    :src="getImageSrc(i)"
+                    :class="getImageClass(i)"
+                    :style="computedStyle(i)"
+                    @click="updateScrollTop(i + 1)"   
+                  />
+           </div>
+          </div> 
 
-<div class="sticky-part-container">
-    <div class="image-wrapper">
-      <img class="img" :src="stickyPartImageSrc" />
-      <img
-        v-for="(item, i) in icons"
-        :key="i"
-        :src="getImageSrc(i)"
-        :class="getImageClass(i)"
-        :style="computedStyle(i)"
-        @click="updateIndex(i + 1)"  
-      />
-    </div>
-</div>
+          <!-- <div id="arrowAnim"  onclick="console.log('Clicked!')">
+              <div class="arrowSliding">
+                <div class="arrow" ></div>
+              </div>
+              <div class="arrowSliding delay1">
+                <div class="arrow"></div>
+              </div>
+              <div class="arrowSliding delay2">
+                <div class="arrow"></div>
+              </div>
+              <div class="arrowSliding delay3">
+                <div class="arrow"></div>
+              </div>
+            </div> -->
+    </div> 
 
-  <div class="second-background" :style="{ backgroundColor: bottomBackGroundColor, height: computedHeight , color: bottomTextColor}" @scroll="handleScroll">
-    <transition name="fade" mode="out-in">
-      <div v-if="showContent" class="desc-container" :key="index">
-        <div class="title">{{ currentTitle }}</div>
-        <div class="detail">
-          <p>{{ currentDesc }}</p>
-        </div>
-      </div>
-    </transition>
+        
   </div>
-  <div class="slider-container">
-    <label class="switch">
-      <input type="checkbox" @change="toggleDarkMode" />
-      <span class="slider round"></span>
-    </label>
-  </div>
+
 </template>
 
 <script>
-//import { Color } from 'three';
 
 export default {
   data() {
     return {
-      darkColor: "#F0F3F8",
-      lightColor: "#140000",
-      isDarkMode: false,
-      showIntro: false,
+      welcomeFullText: "Welcome to My Portfolio!",
+      welcomeShownText: "",
+      welcomeIndex: 0,
+      isVisible: false,
+      // typingSound: new Audio('path/to/typing-sound.mp3'), // Add your sound file
+      
+      road: require('@/assets/road.png'),
+      showIntro: true,
+      index: 0,
+      currentDesc : "",
+      currentTitle: "",
+      showContent: false,
+      indexFractionLoss: 0,
+      indexPorportion: 0.7,
+      scrollPorportion: 0.8,  
+      
       items: [
       {
-    title: "Interests and Hobbies",
-    desc: `
-              Yoga, meditation, and mindfulness 🧘‍♀️
-              Watching YouTube 📺
-              Enjoying sitcoms 
-              Listening to music 🎶
-              Hiking in nature ⛰️
-              Cooking delicious meals 🍳    `
-  },
+      title: "Interests and Hobbies",
+      desc: 
+                "Yoga, meditation, and mindfulness 🧘‍♀️"
+
+        },
         {
             title: "Education",
             desc: "Bachelor's Degree in Computer Science from XYZ University, specializing in Software Development. Graduated with honors in 2022."
@@ -84,259 +107,282 @@ export default {
             desc: "You can reach me at my email: example@email.com or connect with me on LinkedIn: linkedin.com/in/yourprofile."
         },
       ],
-      index: 0,
-      currentTitle: "", 
-      currentDesc: "", 
-      porportion: 0.8,
-      showContent: false,
       icons: [
         {
           pic: require('@/assets/personal.png'),
-          dark: require('@/assets/personal-dark.png'),
-          darkTransition: require('@/assets/personal-transition-dark.png'),
-          transitionPic: require('@/assets/personal-bigger.png'),
+          transitionPic: require('@/assets/personal-transition.png'),
           position: {
-            left: 31,
-            transitionLeft: 30,
+            left: 4,
+            top: 9,
+            transitionLeft: 3,
+            transtitionTop: 4,
           },
         },
         {
           pic: require('@/assets/uni.png'),
-          dark: require('@/assets/uni-dark.png'),
-          darkTransition: require('@/assets/uni-transition-dark.png'),
           transitionPic: require('@/assets/uni-transition.png'),
           position: {
-            left: 37,
-            transitionLeft: 36,
+            left: 10,
+            top: 44,
+            transitionLeft: 9,
+            transtitionTop: 39
           },
         },
         {
           pic: require('@/assets/work.png'),
-          dark: require('@/assets/work-dark.png'),
-          darkTransition: require('@/assets/work-transition-dark.png'),
           transitionPic: require('@/assets/work-transition.png'),
           position: {
-            left: 44,
-            transitionLeft: 43,
+            left: 30,
+            top: 68,
+            transitionLeft: 28.9,
+            transtitionTop: 63
           },
         },
         {
           pic: require('@/assets/projects.png'),
-          dark: require('@/assets/project-dark.png'),
-          darkTransition: require('@/assets/project-transition-dark.png'),
-          transitionPic: require('@/assets/project-transition.png'),
+          transitionPic: require('@/assets/projects-transition.png'),
           position: {
-            left: 50.5,
-            transitionLeft: 49.5,
+            left: 55,
+            top: 87.5,
+            transitionLeft: 54,
+            transtitionTop: 82.5
           },
         },
         {
           pic: require('@/assets/contact.png'),
-          dark: require('@/assets/contact-dark.png'),
-          darkTransition: require('@/assets/contact-transition-dark.png'),
           transitionPic: require('@/assets/contact-transition.png'),
           position: {
-            left: 57.5,
-            transitionLeft: 56.5,
+            left: 70,
+            top: 75,
+            transitionLeft: 69,
+            transtitionTop: 70
           },
         },
-      ],
-      iconTop: 20,
-      iconTopTranstion: 6,
-      stickyPartLight: require('@/assets/sticky part-revese.png'),
-      stickyPartDark: require('@/assets/sticky part.png'), 
-    };
-      
+      ]
+    }
   },
   computed: {
     computedHeight() {
-      const screenHeight = window.innerHeight;
-      const height = this.porportion * screenHeight * this.items.length;
+      const height = this.items.length * window.innerHeight; 
       return `${height}px`;
     },
-    stickyPartImageSrc() {
-      return this.isDarkMode ?  this.stickyPartLight : this.stickyPartDark;
-    },
-    topTextColor() {
-      if (this.isDarkMode) {
-        return this.darkColor;
-      } else {
-        return this.lightColor;
-      } 
-    },
-
-    bottomTextColor() {
-      if (this.isDarkMode) {
-        return this.lightColor;
-      } else {
-        return this.darkColor;
-      } 
-    },
-    topBackgroundcolor(){
-      if (this.isDarkMode) {
-        return this.lightColor; 
-      } else {
-        return this.darkColor;
-      }
-    },
-    bottomBackGroundColor(){
-      if (this.isDarkMode) {
-       return this.darkColor;
-      } else {
-       return this.lightColor; // Light mode second background
-      }
-    }
+    
 
   },
   watch: {
-    index(newValue, oldValue) {
-      if (newValue == 0){
-        this.showContent = false,
-        this.fadeInIntro();
+    index(newValue){
+      this.showContent = false;
+      this.showIntro = false;
+      if (newValue > 0){
+        this.updateCurrentItem(newValue)
+        setTimeout(() => {
+            this.showContent = true;
+        }, 200);
       }
-      if (newValue >= 0.5){
-        this.fadeOutIntro();
-      }
-      if (newValue> 0 && oldValue>0 ){
-        this.showContent = false; // Hide the content with fade out
-        this.updateCurrentItem(newValue); // Update the content after fade out
-      }
-      if (newValue> 0 && oldValue == 0 ){
-        this.updateCurrentItem(newValue);
-        this.showContent = true;
+      else {
+        setTimeout(() => {
+            this.showIntro = true;
+        }, 200);
         
       }
-      
-      
-    },
-    showContent(newValue){
-      if (newValue == false && this.index > 0)
-        this.showContent = true;
-    },
+    }
   },
   mounted() {
+    this.type();
     window.addEventListener("scroll", this.handleScroll);
-    this.updateCurrentItem(this.index); // Initialize content on mount
-    this.showIntro = true; // Show intro on mount
+    setTimeout(() => {
+            this.isVisible = true;
+        }, 1000);
+    
   },
   beforeUnmount() {
     window.removeEventListener("scroll", this.handleScroll);
   },
-  methods: {
-    handleScroll() {
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      const screenHeight = window.innerHeight;
-      if (scrollTop < this.porportion * screenHeight) {
-        this.index = 0;
-      }
-      if ((scrollTop > ( 0.2* screenHeight))){
-        this.index = 0.5
-      } 
-      var temp = Math.round(scrollTop / (this.porportion * screenHeight));
-      if (temp >= 1) {
-        this.index = temp
-      }
+  methods:{
+    handleScroll(){
+    const scrollTop = document.documentElement.scrollTop;
+    const totalScrollableHeight = document.documentElement.scrollHeight - window.innerHeight; // Total scrollable height (content height - window height)
+    const scrollPercentage = scrollTop / (totalScrollableHeight * this.indexPorportion);
+    var temp = Math.floor(scrollPercentage * this.items.length)
+    if (temp <= this.items.length )
+    this.index = temp ;
     },
-    updateCurrentItem(index) {
-      // Update the currentTitle and currentDesc based on the new index
-      this.currentTitle = this.items[index - 1]?.title || "";
-      this.currentDesc = this.items[index - 1]?.desc || "";
-    },
-
     getImageSrc(i) {
-      if (!this.isDarkMode)
-        return this.index === i + 1 ? this.icons[i].transitionPic : this.icons[i].pic;
-      else
-        return this.index === i + 1 ? this.icons[i].darkTransition : this.icons[i].dark;
+      return this.index === i + 1 ? this.icons[i].transitionPic : this.icons[i].pic;
+    },
+    getImageClass(i) {
+        return this.index === i + 1 ? 'overlay-image-transition' : 'overlay-image';
     },
     computedStyle(i) {
       if (this.index === i + 1) {
         return {
-          top: this.iconTopTranstion + '%',
+          top: this.icons[i].position.transtitionTop + '%',
           left: this.icons[i].position.transitionLeft + '%',
         };
       } else {
         return {
-          top: this.iconTop + '%',
+          top: this.icons[i].position.top + '%',
           left: this.icons[i].position.left + '%',
         };
       }
     },
-    getImageClass(i) {
-      return this.index === i + 1 ? 'overlay-image-transition' : 'overlay-image';
-    },
-    updateIndex(newIndex) {
-      this.index = newIndex; 
-      this.updateScrollPosition();
-    },
-
-    updateScrollPosition() {
-      const targetScroll = (window.innerHeight * this.index ) * this.porportion ;//this.index * this.proportion * window.innerHeight; // Ensure this corresponds to downward movement
+    updateScrollTop(newIndex) {
+      console.log("*********")
+      const totalScrollableHeight = document.documentElement.scrollHeight - window.innerHeight; 
+      const scrollPercentage = newIndex / this.items.length;
+      var scrollTop = (scrollPercentage * totalScrollableHeight)* this.scrollPorportion;
       window.scrollTo({
-        top: targetScroll
-        //behavior: 'smooth', // Optional: smooth scroll to the target position
+        top: scrollTop,
       });
     },
-    fadeOutIntro() {
-      this.showIntro = false;
+    updateCurrentItem(index) {
+      this.currentTitle = this.items[index - 1]?.title || "";
+      this.currentDesc = this.items[index - 1]?.desc || "";
+      
     },
-    fadeInIntro() {
-      this.showIntro = true; 
+    type() {
+      if (this.welcomeIndex < this.welcomeFullText.length) {
+        this.welcomeShownText += this.welcomeFullText.charAt(this.welcomeIndex);
+        this.welcomeIndex++;
+        setTimeout(this.type, 50);
+      }
     },
-    toggleDarkMode(event) {
-      this.isDarkMode = event.target.checked;
+    startJourney(){
+      this.updateScrollTop(1)
     },
+    
+
   },
+
+ 
+   
+ 
+
 };
 </script>
 
-<style scoped>
+
+<style>
+
 html,
 body {
   height: 100%;
   margin: 0;
-  overflow-y: scroll;
 }
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap'); /* Importing Poppins font */
 
-.main-background {
-  display: flex;
-  width: 100%;
-  justify-content: center;
+.white-main-contatiner {
   position: relative;
-  height: 70vh;
-  overflow: hidden;
-  background-color: #f0f0f0; /* Soft background color */
+  width: 100%;
+  background-color: white;
+  z-index: 10;
 }
+
+
+.fixed-screen{
+  top: 0;
+  position: sticky;
+  height: 95vh;  
+  top: 2%;
+}
+.content-wrapper {
+  position: relative;
+  height: 100%;
+ 
+}
+
+.scrolling-data{
+  position: absolute;
+  padding-top: 8%;
+  /* display: flex; */
+  justify-content: center;
+  
+  width: 50%;
+  right: 20%;
+  height: 45%;
+}
+.title{
+  display: flex;
+  justify-content: center;
+  font-size: 2vw; 
+  font-family: 'Poppins', sans-serif; 
+  font-weight: 600; 
+  letter-spacing: 1.5px;
+  /* animation: slideInLeft 1.2s ease forwards;  */
+  z-index: 5;
+}
+.detail{
+  display: flex;
+  justify-content: center;
+  padding-left: 20px;
+  font-size: 1vw;
+  font-family: 'Poppins', sans-serif; 
+  font-weight: 300;
+  height: fit-content;
+  padding: 10%;
+  z-index: 5;
+}
+
 
 .intro {
-  display: flex;
+  position: absolute;
+  padding-top: 8%;
+  /* display: flex; */
   justify-content: center;
-  width: 70%;
-  margin: auto;
-  opacity: 1;
-  transition: opacity 1.5s ease-in-out; /* Smooth fade effect */
+  width: 75%;
+  right: 0;
+  height: 45%;
 }
 
 .welcome {
-  margin-right: 5%;
-  font-size: 4vw; /* Responsive font size */
-  font-family: 'Poppins', sans-serif; /* Apply Poppins font */
-  font-weight: 600; /* Make it bold */
-  /* color: #333;  */
-  letter-spacing: 1.5px; /* Space out letters slightly */
-  animation: slideInLeft 1.2s ease forwards; /* Slide-in effect */
+  /* width: 30%; */
+  position: absolute;
+  /* left: 0; */
+  font-size: 4vw; 
+  font-family: 'Poppins', sans-serif; 
+  font-weight: 600; 
+  letter-spacing: 1.5px; 
+  z-index: 5;
 }
 
 .info {
-  border-left: 3px solid #555; /* Softer border color */
+  position: absolute;
+  margin-top: 10%;
   padding-left: 20px;
   font-size: 1.5vw;
-  font-family: 'Poppins', sans-serif; /* Font for the info text */
-  font-weight: 300; /* Light and elegant */
-  /* color: #444;  */
-  line-height: 1.6; /* Increase line height for readability */
-  animation: slideInRight 1.2s ease forwards;
+  font-family: 'Poppins', sans-serif; 
+  font-weight: 300;
+  height: fit-content;
+  z-index: 5;
+}
+
+.buttons-wrapper{
+  height: 20%;
+  bottom: 10%;
+  position: absolute;
+  width: 20%;
+  right: 15%;
+}
+.flat-button{
+  position: relative;
+  width: 100%;
+  margin: 1%;
+  height: 40%;
+  z-index: 10;
+  background: none;
+  border: 2px solid black; /* Border with flat color */
+  color: black; /* Flat blue text */
+  padding: 10px 20px;
+  font-size: 1vw;
+  border-radius: 4px; /* Slight rounding for a clean look */
+  cursor: pointer;
+  animation: float 3s ease-in-out infinite;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.flat-button:hover {
+  background-color: #EA8A6F;
+  font-size: 1.1vw;
+  animation: none; 
 }
 
 p {
@@ -349,177 +395,127 @@ strong {
 
 em {
   font-style: italic;
-  color: #0077cc; /* Highlighted color */
-}
+  color: #0077cc;
+}  
 
-/* Fade-in and Fade-out classes */
-.fade-in {
-  opacity: 1;
-  transition: opacity 1s ease-in-out;
-}
-
-.fade-out {
-  opacity: 0;
-  transition: opacity 0.8s ease-in-out;
-}
-
-/* Animation keyframes */
-@keyframes slideInLeft {
-  from {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideInRight {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-
-.second-background {
-  display: flex;
-  justify-content: center;
-  position: relative;
-  width: 100%;
-  padding-top: 20%;
-}
-
-.desc-container {
-  display: flex;
-  height: fit-content;
-  position: fixed;
-  top: 45%;
-  width: 70%;
-  z-index: 10;
-}
-.title {
-  margin-right: 5%;
+.image-container{
+  margin: auto;
   height: 100%;
-  width: 30%;
-  font-size: 3.5vw;
-  text-align: center;
-}
-.detail {
-  border-left: white solid;
-  /* height: 100%; */
-  padding-left: 1%;
-  font-size: 2vw;
+  width: 100%;
+  bottom: 0;
+  position: absolute;
+  z-index: 2;
 }
 
-.sticky-part-container {
-  margin: 0;
-  height: fit-content;
-  width: 100%;
-  top: 0;
-  margin-bottom: -10px;
-  position: sticky;
-  z-index: 10;
-  margin-bottom: -10;
-}
-.image-wrapper {
-  position: relative; /* Make this container relative */
-}
 .img {
   width: 100%;
+  height: 85%;
+  bottom: 0;
+  position: absolute;
+  clip-path: inset(0 100% 0 0);
+  animation: reveal 1.5s ease-in-out forwards;
 }
 
 .overlay-image {
-  position: absolute; /* Overlay images will be positioned relative to the image-wrapper */
-  width: 3%; /* Set your desired size */
-  height: 35%;
-}
-.overlay-image-transition {
-  position: absolute; /* Overlay images will be positioned relative to the image-wrapper */
-  width: 4.5%; /* Set your desired size */
-  height: 50%;
+  position: absolute; 
+  width: 4%; 
+  height: 12%;
   transition: all 0.7s ease;
 }
-/* Fade transition styles */
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.4s;
+.overlay-image-transition {
+  position: absolute; 
+  width: 6%;
+  height: 17%;
+  transition: all 0.7s ease;
 }
-.fade-enter-from, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
+@keyframes reveal {
+  0% {
+    clip-path: inset(0 100% 0 0); /* Image fully hidden */
+  }
+  100% {
+    clip-path: inset(0 0 0 0); /* Image fully revealed */
+  }
+}
+
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
   opacity: 0;
 }
-.slider-container {
-  position: fixed;
-  bottom: 2vh; /* 20% from the top of the viewport */
-  left: 2vw; /* 5% from the right side of the viewport */
-  z-index: 999;
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0); /* Start and end at the original position */
+  }
+  50% {
+    transform: translateY(-20px); /* Move up by 10px */
+  }
 }
 
-/* The switch - now made bigger and more responsive */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 3.5vw; /* 10% of the viewport width */
-  height: 2vw; /* 6% of the viewport width for a bigger, relative size */
-}
 
-/* Hide default HTML checkbox */
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
 
-/* The slider */
-.slider {
+
+/* #arrowAnim {
+  background-color: red;
+  transform: rotate(90deg);
+  bottom: 10%;
+  left:2%;
+
   position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: 0.4s;
-  transition: 0.4s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.slider:before {
+.arrow {
+  width: 0.5vw;
+  height: 1vh;
+  border: 0.2vw solid;
+  border-color: black transparent transparent black;
+  transform: rotate(-45deg);
+}
+
+
+.arrowSliding {
   position: absolute;
-  content: "";
-  height: 2vw; /* Make the slider knob bigger and responsive */
-  width: 2vw;
-  left: 0vw;
-  bottom: 0vw;
-  background-color: white;
-  -webkit-transition: 0.4s;
-  transition: 0.4s;
+  -webkit-animation: slide 4s linear infinite; 
+          animation: slide 4s linear infinite;
 }
 
-input:checked + .slider {
-  background-color: #2196f3;
+.delay1 {
+  -webkit-animation-delay: 1s; 
+    animation-delay: 1s;
+}
+.delay2 {
+  -webkit-animation-delay: 2s; 
+    animation-delay: 2s;
+}
+.delay3 {
+  -webkit-animation-delay: 3s; 
+    animation-delay: 3s;
 }
 
-input:focus + .slider {
-  box-shadow: 0 0 1vw #2196f3;
+@-webkit-keyframes slide {
+    0% { opacity:0; transform: translateX(3vw); }	
+   20% { opacity:1; transform: translateX(1vw); }	
+   80% { opacity:1; transform: translateX(-1vw); }	
+  100% { opacity:0; transform: translateX(-3vw); }	
 }
+@keyframes slide {
+    0% { opacity:0; transform: translateX(3vw); }	
+   20% { opacity:1; transform: translateX(1vw); }	
+   80% { opacity:1; transform: translateX(-1vw); }	
+  100% { opacity:0; transform: translateX(-3vw); }	
+} */
 
-input:checked + .slider:before {
-  -webkit-transform: translateX(2vw); /* Adjusted for the bigger slider */
-  -ms-transform: translateX(2vw);
-  transform: translateX(2vw);
-}
 
-/* Rounded slider */
-.slider.round {
-  border-radius: 6vw; 
-}
 
-.slider.round:before {
-  border-radius: 50%;
-}
 
 </style>
+
+
+
