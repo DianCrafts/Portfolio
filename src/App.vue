@@ -5,14 +5,25 @@
                 <div class="text-overlay">
                     <p>Hello, I'm Dian. <br /> Welcome to my <span>Portfolio!</span></p>
                 </div>
-                <div class="scroll-text-container">
+                <div class="scroll-text-container" @click="scrollTop()">
                       <div class="scroll-text">
                         <p>SCROLL</p>
                       </div>
                </div>
     </div>
     <div class = "content-container">
-      <div class = intro>
+      <div class = intro ref="intro" v-motion 
+      :initial="{
+          opacity: 0,
+        }"
+        :visible="{
+          opacity: 1,
+          transition: {
+          duration: 1000,
+          ease: 'easeIn',
+        },
+        }"
+      >
         <svg width="600" height="600" viewBox="0 0 400 500" fill="none"  preserve-aspect-ratio="xMidYMx meet">
           <mask id="mask0_18_44" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="400">
           <circle cx="200" cy="200" r="185" transform="rotate(-180 200 200)" stroke="black" stroke-width="30"/>
@@ -30,7 +41,19 @@
           </svg>
 
       </div>
-      <div class="button-row" ref="buttonRow">
+      <div class="button-row" ref="buttonRow"
+      v-motion 
+      :initial="{
+          opacity: 0,
+        }"
+        :visible="{
+          opacity: 1,
+          transition: {
+          duration: 1000,
+          ease: 'easeIn',
+        },
+        }"
+      >
           <button 
             v-for="(item, index) in items" 
             :key="index" 
@@ -118,6 +141,9 @@ export default {
     };
   },
   methods: {
+    scrollTop() {
+      this.$refs.intro.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    },
     scrollToButtonRow(index) {
       this.index = index;
       this.isVisible = false;
