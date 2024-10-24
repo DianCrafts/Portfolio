@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
-import {MotionPlugin} from '@vueuse/motion'
 import App from './App.vue'
-const app = createApp(App)
-app.use(MotionPlugin)
+import 'aos/dist/aos.css'
+
+const app = createApp(App);
+
 app.mount('#app')
